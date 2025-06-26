@@ -1,8 +1,109 @@
 import streamlit as st
 import random
 
-# Konfigurasi halaman Streamlit
+# --- Inisialisasi CSS Kustom untuk Background dan Tabel ---
+# Warna pastel untuk tabel
+PASTEL_COLORS = [
+    "#D0E7F5", # Light Blue
+    "#F5D0E7", # Light Pink
+    "#E7F5D0", # Light Green
+    "#F5E7D0", # Light Orange/Peach
+    "#D0F5E7", # Light Teal
+]
+
+# CSS kustom untuk mengubah background aplikasi dan gaya tabel
+custom_css = f"""
+<style>
+    /* Mengubah warna latar belakang seluruh halaman Streamlit */
+    body {{
+        background-color: #F4EBD3; /* Warna krem pastel yang diminta */
+        color: #333333; /* Warna teks default agar kontras */
+    }}
+    .stApp {{
+        background-color: #F4EBD3; /* Juga untuk container utama Streamlit */
+    }}
+
+    /* Gaya untuk tabel perkalian */
+    .multiplication-table {{
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        font-family: 'Inter', sans-serif; /* Menggunakan font Inter */
+        border-radius: 10px; /* Sudut membulat */
+        overflow: hidden; /* Penting untuk radius pada collapse table */
+    }}
+    .multiplication-table th, .multiplication-table td {{
+        padding: 12px 15px;
+        text-align: center;
+        border: 1px solid #e0e0e0; /* Border tipis antar sel */
+        border-radius: 8px; /* Sudut membulat pada sel */
+    }}
+    .multiplication-table th {{
+        background-color: #AEC6CF; /* Header warna biru muda */
+        color: white;
+        font-weight: bold;
+    }}
+    /* Warna striping untuk baris tabel */
+    .multiplication-table tr:nth-child(odd) {{
+        background-color: {PASTEL_COLORS[0]};
+    }}
+    .multiplication-table tr:nth-child(even) {{
+        background-color: {PASTEL_COLORS[1]};
+    }}
+    /* Lebih banyak warna pastel untuk setiap baris */
+    .multiplication-table tr:nth-child(3n+0) {{ background-color: {PASTEL_COLORS[2]}; }}
+    .multiplication-table tr:nth-child(3n+1) {{ background-color: {PASTEL_COLORS[3]}; }}
+    .multiplication-table tr:nth-child(3n+2) {{ background-color: {PASTEL_COLORS[4]}; }}
+
+    /* Gaya untuk elemen-elemen Streamlit lainnya agar serasi */
+    .stButton>button {{
+        background-color: #C0D6E4; /* Warna tombol yang serasi */
+        color: #333333;
+        border-radius: 8px;
+        padding: 10px 20px;
+        border: none;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }}
+    .stButton>button:hover {{
+        background-color: #AEC6CF;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    }}
+    .stRadio > label, .stSlider > label, .stNumberInput > label, .stTextInput > label, .stSelectbox > label {{
+        color: #555555;
+        font-weight: 500;
+    }}
+    .stTextInput>div>div>input {{
+        border-radius: 8px;
+        border: 1px solid #B0B0B0;
+        padding: 8px;
+    }}
+    .stSuccess {{
+        background-color: #D4EDDA; /* Hijau soft */
+        color: #155724;
+        border-radius: 8px;
+        padding: 10px;
+    }}
+    .stError {{
+        background-color: #F8D7DA; /* Merah soft */
+        color: #721C24;
+        border-radius: 8px;
+        padding: 10px;
+    }}
+    .stWarning {{
+        background-color: #FFF3CD; /* Kuning soft */
+        color: #856404;
+        border-radius: 8px;
+        padding: 10px;
+    }}
+</style>
+"""
+
+# Konfigurasi halaman Streamlit dan injeksi CSS kustom
 st.set_page_config(layout="centered", page_title="Latihan Matematika Asyik!")
+st.markdown(custom_css, unsafe_allow_html=True)
 
 # --- Fungsi untuk menghasilkan soal matematika ---
 def generate_question(operation, num_range):
@@ -12,12 +113,14 @@ def generate_question(operation, num_range):
     # Logika khusus untuk pembagian agar hasilnya bulat dan pembagi tidak nol
     if operation == "Pembagian":
         # Pastikan num1 adalah kelipatan num2 dan num2 tidak nol
-        while num2 == 0 or num1 % num2 != 0:
+        # Jika num2 = 0, set ke 1 agar tidak ada pembagian dengan nol
+        if num2 == 0:
+            num2 = 1
+        while num1 % num2 != 0:
             num1 = random.randint(1, num_range)
             num2 = random.randint(1, num_range)
             if num2 == 0: # Pastikan num2 tidak nol, ulangi jika perlu
-                num2 = random.randint(1, num_range)
-
+                num2 = 1
 
     question = ""
     answer = 0
@@ -38,14 +141,16 @@ def generate_question(operation, num_range):
         answer = num1 // num2 # Menggunakan integer division untuk hasil bulat
     return question, answer
 
-# --- Fungsi untuk membuat tabel perkalian ---
+# --- Fungsi untuk membuat tabel perkalian (sekarang menghasilkan HTML) ---
 def buat_tabel_perkalian(angka):
-    tabel_html = f"## Tabel Perkalian {angka}\n\n"
-    # Menggunakan format markdown untuk tabel yang lebih rapi
-    tabel_html += "| Faktor | Hasil |\n"
-    tabel_html += "|:------:|:-----:|\n"
+    tabel_html = '<table class="multiplication-table">'
+    tabel_html += '<thead><tr><th>Faktor</th><th>Hasil</th></tr></thead>'
+    tabel_html += '<tbody>'
     for i in range(1, 11):
-        tabel_html += f"| {angka} x {i} | {angka * i} |\n"
+        # Menggunakan inline style untuk warna baris, meskipun CSS global lebih baik
+        # Namun, untuk warna striping yang lebih dinamis, CSS di atas sudah cukup
+        tabel_html += f'<tr><td>{angka} x {i}</td><td>{angka * i}</td></tr>'
+    tabel_html += '</tbody></table>'
     return tabel_html
 
 # --- Inisialisasi session state untuk menyimpan data antar sesi ---
@@ -154,8 +259,9 @@ elif pilihan_tampilan == "Tabel Perkalian":
         key='angka_tabel_perkalian'
     )
 
-    # Tampilkan tabel perkalian
-    st.markdown(buat_tabel_perkalian(int(angka_perkalian)))
+    # Tampilkan tabel perkalian menggunakan HTML kustom
+    st.markdown(buat_tabel_perkalian(int(angka_perkalian)), unsafe_allow_html=True)
 
 st.markdown("---")
-st.info("Dibuat dengan ❤️ dari Fitry untuk Laila & Laili")
+st.info("Dibuat dengan Cinta❤️ untuk adik saya!")
+st.info("Fitry Rosita Desviani.")
