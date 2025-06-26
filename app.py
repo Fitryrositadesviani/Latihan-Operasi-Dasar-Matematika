@@ -102,7 +102,7 @@ custom_css = f"""
 """
 
 # Konfigurasi halaman Streamlit dan injeksi CSS kustom
-st.set_page_config(layout="centered", page_title="Latihan Matematika Asyik!")
+st.set_page_config(layout="centered", page_title="Latihan Matematika 🌷")
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # --- Fungsi untuk menghasilkan soal matematika ---
@@ -263,5 +263,5 @@ elif pilihan_tampilan == "Tabel Perkalian":
     st.markdown(buat_tabel_perkalian(int(angka_perkalian)), unsafe_allow_html=True)
 
 st.markdown("---")
-st.info("Dibuat dengan Cinta❤️ untuk adik saya!")
-st.info("Fitry Rosita Desviani.")
+st.info("Dibuat oleh fitry dengan Cinta❤️ untuk adik saya!")
+
