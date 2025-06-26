@@ -273,4 +273,4 @@ elif pilihan_tampilan == "Tabel Perkalian":
     st.markdown(buat_tabel_perkalian(int(angka_perkalian)), unsafe_allow_html=True)
 
 st.markdown("---")
-st.info("Dibuat oleh Fitry dengan ❤️ untuk adikku tersayang! 🍒")
+st.info("Dibuat oleh Fitry dengan ❤️ untuk adikku tersayang!")
