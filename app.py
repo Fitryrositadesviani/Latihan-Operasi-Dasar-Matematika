@@ -2,13 +2,13 @@ import streamlit as st
 import random
 
 # --- Inisialisasi CSS Kustom untuk Background dan Tabel ---
-# Warna pastel untuk tabel
-PASTEL_COLORS = [
-    "#D0E7F5", # Light Blue
-    "#F5D0E7", # Light Pink
-    "#E7F5D0", # Light Green
-    "#F5E7D0", # Light Orange/Peach
-    "#D0F5E7", # Light Teal
+# Warna untuk baris tabel (lebih kontras dari sebelumnya, tapi tetap soft)
+TABLE_ROW_COLORS = [
+    "#C9E4E7", # Soft Aqua
+    "#F0D8D8", # Muted Rose
+    "#D7E7CE", # Pale Sage Green
+    "#C1E0F1", # Another soft blue
+    "#F1E0C1", # Soft Peach
 ]
 
 # CSS kustom untuk mengubah background aplikasi dan gaya tabel
@@ -31,33 +31,34 @@ custom_css = f"""
         font-family: 'Inter', sans-serif; /* Menggunakan font Inter */
         border-radius: 10px; /* Sudut membulat */
         overflow: hidden; /* Penting untuk radius pada collapse table */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* Sedikit bayangan untuk menonjolkan */
     }}
     .multiplication-table th, .multiplication-table td {{
         padding: 12px 15px;
         text-align: center;
         border: 1px solid #e0e0e0; /* Border tipis antar sel */
-        border-radius: 8px; /* Sudut membulat pada sel */
     }}
     .multiplication-table th {{
-        background-color: #AEC6CF; /* Header warna biru muda */
+        background-color: #6A8D73; /* Header warna hijau muted yang lebih gelap */
         color: white;
         font-weight: bold;
     }}
     /* Warna striping untuk baris tabel */
-    .multiplication-table tr:nth-child(odd) {{
-        background-color: {PASTEL_COLORS[0]};
-    }}
-    .multiplication-table tr:nth-child(even) {{
-        background-color: {PASTEL_COLORS[1]};
-    }}
-    /* Lebih banyak warna pastel untuk setiap baris */
-    .multiplication-table tr:nth-child(3n+0) {{ background-color: {PASTEL_COLORS[2]}; }}
-    .multiplication-table tr:nth-child(3n+1) {{ background-color: {PASTEL_COLORS[3]}; }}
-    .multiplication-table tr:nth-child(3n+2) {{ background-color: {PASTEL_COLORS[4]}; }}
+    .multiplication-table tbody tr:nth-child(1) {{ background-color: {TABLE_ROW_COLORS[0]}; }}
+    .multiplication-table tbody tr:nth-child(2) {{ background-color: {TABLE_ROW_COLORS[1]}; }}
+    .multiplication-table tbody tr:nth-child(3) {{ background-color: {TABLE_ROW_COLORS[2]}; }}
+    .multiplication-table tbody tr:nth-child(4) {{ background-color: {TABLE_ROW_COLORS[0]}; }}
+    .multiplication-table tbody tr:nth-child(5) {{ background-color: {TABLE_ROW_COLORS[1]}; }}
+    .multiplication-table tbody tr:nth-child(6) {{ background-color: {TABLE_ROW_COLORS[2]}; }}
+    .multiplication-table tbody tr:nth-child(7) {{ background-color: {TABLE_ROW_COLORS[0]}; }}
+    .multiplication-table tbody tr:nth-child(8) {{ background-color: {TABLE_ROW_COLORS[1]}; }}
+    .multiplication-table tbody tr:nth-child(9) {{ background-color: {TABLE_ROW_COLORS[2]}; }}
+    .multiplication-table tbody tr:nth-child(10) {{ background-color: {TABLE_ROW_COLORS[0]}; }}
+
 
     /* Gaya untuk elemen-elemen Streamlit lainnya agar serasi */
     .stButton>button {{
-        background-color: #C0D6E4; /* Warna tombol yang serasi */
+        background-color: #B0C4DE; /* Light Steel Blue */
         color: #333333;
         border-radius: 8px;
         padding: 10px 20px;
@@ -66,7 +67,7 @@ custom_css = f"""
         transition: all 0.3s ease;
     }}
     .stButton>button:hover {{
-        background-color: #AEC6CF;
+        background-color: #92B4D7; /* Sedikit lebih gelap saat hover */
         color: white;
         transform: translateY(-2px);
         box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
@@ -85,24 +86,31 @@ custom_css = f"""
         color: #155724;
         border-radius: 8px;
         padding: 10px;
+        border: 1px solid #C3E6CB;
     }}
     .stError {{
         background-color: #F8D7DA; /* Merah soft */
         color: #721C24;
         border-radius: 8px;
         padding: 10px;
+        border: 1px solid #F5C6CB;
     }}
     .stWarning {{
         background-color: #FFF3CD; /* Kuning soft */
         color: #856404;
         border-radius: 8px;
         padding: 10px;
+        border: 1px solid #FFEEDB;
+    }}
+    /* Mengatur style untuk judul utama */
+    h1 {{
+        color: #4A6B5F; /* Warna teks untuk judul utama, agar kontras */
     }}
 </style>
 """
 
 # Konfigurasi halaman Streamlit dan injeksi CSS kustom
-st.set_page_config(layout="centered", page_title="Latihan Matematika 🌷")
+st.set_page_config(layout="centered", page_title="Latihan Matematika Asyik 🌷")
 st.markdown(custom_css, unsafe_allow_html=True)
 
 # --- Fungsi untuk menghasilkan soal matematika ---
@@ -147,9 +155,11 @@ def buat_tabel_perkalian(angka):
     tabel_html += '<thead><tr><th>Faktor</th><th>Hasil</th></tr></thead>'
     tabel_html += '<tbody>'
     for i in range(1, 11):
-        # Menggunakan inline style untuk warna baris, meskipun CSS global lebih baik
-        # Namun, untuk warna striping yang lebih dinamis, CSS di atas sudah cukup
-        tabel_html += f'<tr><td>{angka} x {i}</td><td>{angka * i}</td></tr>'
+        # Menggunakan class untuk warna baris yang sudah didefinisikan di CSS
+        # Menggunakan modulo untuk mengulang warna dari daftar TABLE_ROW_COLORS
+        color_class_index = (i - 1) % len(TABLE_ROW_COLORS)
+        row_color = TABLE_ROW_COLORS[color_class_index]
+        tabel_html += f'<tr style="background-color: {row_color};"><td>{angka} x {i}</td><td>{angka * i}</td></tr>'
     tabel_html += '</tbody></table>'
     return tabel_html
 
@@ -168,7 +178,7 @@ if 'user_answer' not in st.session_state:
     st.session_state.user_answer = "" # Untuk menyimpan jawaban pengguna
 
 # --- Bagian utama aplikasi Streamlit ---
-st.title("Latihan Matematika Asyik!")
+st.title("Latihan Matematika Asyik 🌷") # Judul aplikasi diubah
 st.write("Ayo latihan berhitung dan hafalkan tabel perkalian!")
 
 # Pilihan antara soal latihan dan tabel perkalian
@@ -263,5 +273,4 @@ elif pilihan_tampilan == "Tabel Perkalian":
     st.markdown(buat_tabel_perkalian(int(angka_perkalian)), unsafe_allow_html=True)
 
 st.markdown("---")
-st.info("Dibuat oleh fitry dengan Cinta❤️ untuk adik saya!")
-
+st.info("Dibuat oleh Fitry dengan ❤️ untuk adikku tersayang! 🍒")
